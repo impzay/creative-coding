@@ -1,3 +1,9 @@
+/*
+ * I chose the embarrased emoji because thats probably the one that i use the most. 
+ * I apporached this making the base emoji face and then layering all the shapes on top of it.
+ * I had to code the blush above the eyes so it could be layered behind, creating a more realisitc effect.
+ */
+
 function setup() {
   // create a canvas
   createCanvas(400, 400);
