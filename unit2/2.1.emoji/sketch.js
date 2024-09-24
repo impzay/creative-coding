@@ -47,4 +47,14 @@ function draw() {
   fill(195, 126, 62);
   stroke(195, 126, 62)
   line(180,280,220,280); 
+//
+  strokeWeight(1);
+  stroke(255, 128, 51);
+  fill(255, 238, 51);
+  ellipse(85,240,30,50);
+  ellipse(80,290,65,105);
+  stroke('black');
+  line(73,260,110,265);
+  line(73,285,110,290);
+  line(73,310,110,315);
 }

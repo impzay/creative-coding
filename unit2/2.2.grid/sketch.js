@@ -5,7 +5,6 @@ function setup() {
   // disable animation
   noLoop();
 }
-var skib = random(10);
 
 function draw() {
   background(220);
