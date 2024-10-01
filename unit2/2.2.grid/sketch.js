@@ -1,3 +1,8 @@
+/*
+ * Isaiah Padgett
+ * I wanted to do a grid pattern similar to binary code like something from the matrix. I took out the noLoop function to give it animation because i think it looks more interesting.
+ */
+
 function setup() {
   // create a canvas
   createCanvas(1200, 1200);
