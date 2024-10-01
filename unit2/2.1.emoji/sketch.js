@@ -6,11 +6,11 @@
 
 function setup() {
   // create a canvas
-  createCanvas(400, 400);
+  createCanvas(800, 800);
 
   // disable animation
-  noLoop();
 }
+teethX = 540;
 
 function draw() {
   background(220);
@@ -47,14 +47,47 @@ function draw() {
   fill(195, 126, 62);
   stroke(195, 126, 62)
   line(180,280,220,280); 
-//
+//hand with thumbs up
   strokeWeight(1);
   stroke(255, 128, 51);
   fill(255, 238, 51);
   ellipse(85,240,30,50);
   ellipse(80,290,65,105);
+//finger lines
   stroke('black');
   line(73,260,110,265);
   line(73,285,110,290);
   line(73,310,110,315);
+
+//Emoji number 2
+//skull head
+  noStroke();
+  fill(255,255,255);
+  ellipse(600,200,225,195); 
+  square(600,225,180,10);
+  rect(600,255,100,250,10);
+//eyes
+  fill(10,10,10);
+  circle(565,260,50);
+  circle(560,255,60);
+  circle(635,260,50);
+  circle(640,255,60);
+//nostrils
+  rotate(50);
+  ellipse(505,455,20,30);
+  rotate(-100);
+  ellipse(655,140,20,30);
+  rotate(50);
+//teeth
+  stroke(50,55,50);
+  strokeWeight(0.5);
+  fill(250,250,250);
+  //for loop to repeat the teeth
+    for (var i = 1; i <= 5; i++) {
+      teethX = teethX + 20;
+      square(teethX,351,20,5);
+      square(teethX,369,20,5);
+    } 
+    fill('green');
+    circle(mouseX,mouseY,20);
 }
