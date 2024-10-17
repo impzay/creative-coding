@@ -30,6 +30,12 @@ function draw() {
       }
       //sets the pixels to the whole screen and the terrainColor
       set(x,y,terrainColor);
+
+      if(noiseValue <0.7){
+        fill('brown');
+        stroke('brown');
+        rect(x,y,50,50);
+      }
     }
   }
   updatePixels();//updates the pixels from the set function
