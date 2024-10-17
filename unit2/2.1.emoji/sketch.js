@@ -9,6 +9,7 @@ function setup() {
   createCanvas(800, 800);
 
   // disable animation
+  noLoop();
 }
 teethX = 540;
 
@@ -87,7 +88,5 @@ function draw() {
       teethX = teethX + 20;
       square(teethX,351,20,5);
       square(teethX,369,20,5);
-    } 
-    fill('green');
-    circle(mouseX,mouseY,20);
+    }
 }

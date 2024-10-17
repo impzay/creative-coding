@@ -7,7 +7,7 @@ function setup() {
   // create a canvas
   createCanvas(1200, 1200);
   frameRate(random(1,10));
-
+  
 }
 
 
