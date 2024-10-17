@@ -1,8 +1,7 @@
-//function preload(){
- // load the image from a file
-	//img = loadImage();
-//}
-
+/*
+ *  Isaiah Padgett
+ *  the main goal of this program was to create a generative landscape/terrain that you are able to determine what the topography of the map looks like, using perlin noise.
+ */
 function setup() {
   
   // create the canvas
@@ -20,7 +19,7 @@ function draw() {
       var noiseValue = noise(x /100,y/100); // sets the noise value to the width and height divided by 100 to zoom into the noise space so i can discern what shapes look like terrain
       
       var terrainColor;
-      if (noiseValue < 0.4){
+      if (noiseValue < 0.4){ // using the noise value as a height map, i changed the color to different "heights" of the noise value
         terrainColor = blue; //blue ocean
       } else if (noiseValue < 0.5){
         terrainColor = color(247, 238, 136); //yellow sand
