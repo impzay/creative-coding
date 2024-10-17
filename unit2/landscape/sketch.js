@@ -13,6 +13,14 @@ function setup() {
 function draw() {
   background(220);
 
+  
+
+
+
+
+
+
+
   // render the image
-  image(img,10,10,100,100);
+  //image(img,10,10,100,100);
 }
