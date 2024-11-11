@@ -92,7 +92,7 @@ function draw() {
   rect(400,0,25,800);
   rect(0,400,825,25);
 
-  image(img,100,100,50,50);
+  image(img,circleX,100,50,50);
 }
 
 function mouseClicked(){
