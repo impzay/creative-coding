@@ -57,6 +57,12 @@ function draw() {
     squareColor = color(random(0,255),random(0,255),random(0,255));
     score = score + 5;
   }
+  if(mouseX > squareX2 && mouseX < squareX2 + 50 && mouseY > squareY2 && mouseY < squareY2 + 50){
+    Xspeed2 = -Xspeed2;
+    Yspeed2 = -Yspeed2;
+    squareColor = color(random(0,255),random(0,255),random(0,255));
+    score = score + 5;
+  }
 
   squareX += Xspeed;
   squareY += Yspeed;
@@ -66,7 +72,7 @@ function draw() {
   //shape
   noStroke();
   fill(squareColor);
-  //rect(squareX,squareY,50,50);
+  rect(squareX,squareY,50,50);
   rect(squareX2,squareY2,50,50);
 
 
@@ -87,6 +93,7 @@ function draw() {
   fill('grey');
   rect(400,0,25,800);
   rect(0,400,825,25);
+
 }
 
 function mouseClicked(){
