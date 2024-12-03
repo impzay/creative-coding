@@ -25,11 +25,7 @@ var Yspeed2;
 var Xspeed2;
 var squareColor = 'red';
 var score = 0;
-let img;
 
-function preload(){
-   img = loadImage('hinata.jpg');
-}
 
 function draw() { 
   background(0,0,0);
@@ -91,8 +87,6 @@ function draw() {
   fill('grey');
   rect(400,0,25,800);
   rect(0,400,825,25);
-
-  image(img,circleX,100,50,50);
 }
 
 function mouseClicked(){
