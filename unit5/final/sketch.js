@@ -90,11 +90,12 @@ function draw() {
   //ball
   noStroke();
   fill('gold');
-  circle(vbX,vbY,75,75);
-  fill('blue');
-  ellipse(vbX,vbY-20,65,-20);
-  ellipse(vbX,vbY+20,65,-20);
+  circle(vbX, vbY, 75); // Base yellow circle
 
+  // Draw blue bands
+  fill('blue');
+  ellipse(vbX, vbY - 20, 65, 20); // Top blue band
+  ellipse(vbX, vbY + 20, 65, 20); // Bottom blue band
 
   if(mouseX >= 0 && mouseX <= 300){
     outside = true;
