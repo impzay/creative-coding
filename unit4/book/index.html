@@ -21,10 +21,30 @@
 
     <style type="text/css">
       
+      @page {
+  size: 148mm 210mm;
+  margin-top: 10mm;
+  margin-right: 20mm;
+  margin-bottom: 25mm;
+  margin-left: 15mm;
+
+  @bottom-left {
+    content: counter(page);
+  }
+
+  @bottom-center {
+    content: string(title);
+    text-transform: uppercase;
+  }
+
+}
+
     </style>
 
 </head>
+
 <body>
+
     <main>
         The Project Gutenberg eBook of 雲形紋章
 This ebook is for the use of anyone anywhere in the United States and most other parts of the world at no cost and with almost no restrictions whatsoever. You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included with this ebook or online at www.gutenberg.org. If you are not located in the United States, you will have to check the laws of the country where you are located before using this eBook.

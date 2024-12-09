@@ -12,7 +12,7 @@ var targetX;
 var targetY;
 var ballMoving = false;
 var falling;
-var armY = 300;
+var armY = -100;
 var gameSpeed = 5;
 var setSpeed = 0.1;
 var randomZone = null;
@@ -38,7 +38,14 @@ let throwBall = false;
 let ballPeak = false;
 let firstStart = true;
 let enterGame = false;
-let bgImage
+let bgImage;
+let oneBtnMode = false;
+let wasdMode = false;
+let tutorial = false;
+let quit = false;
+let startMenuOpened = true;
+let setterX = 400;
+let setterY = 400;
 
 function setup() {
   createCanvas(800, 800);
@@ -46,7 +53,7 @@ function setup() {
 }
 
 function preload(){
-  bgImage = loadImage('haikyu gym bg.jpg')
+  bgImage = loadImage('https://impzay.github.io/creative-coding/unit5/final/haikyu%20gym%20bg.jpg');
 }
 
 function draw() {
@@ -76,14 +83,33 @@ function draw() {
     fill('#ffcc99');
     stroke('#ffb366');
     strokeWeight(5);
-    rect(350,armY,20,140);
+    rect(setterX - 50,setterY+armY,20,140);
     //setter
     //head
     fill('#ffcc99');
-    circle(400,400,100,100);
+    circle(setterX,setterY,100,100);
     
 
 
+    if(wasdMode){
+      if(!keyIsDown){
+        setterX = setterX
+        setterY = setterY
+      } 
+
+        if(keyIsDown(65)){
+          setterX -= 2;
+        }
+        if(keyIsDown(68)){
+          setterX += 2;
+        }
+        if(keyIsDown(87)){
+          setterY -= 1;
+        }
+        if(keyIsDown(83)){
+          setterY +=1;
+        }
+    }
     if(throwBall){
       vbSize -= 1
       vbX += 1;
@@ -176,7 +202,7 @@ function draw() {
     fill('#ffcc99');
     stroke('#ffb366');
     strokeWeight(5);
-    rect(400,armY,20,140);
+    rect(setterX,setterY + armY,20,140);
 
     if (setFalling && vbY <= 300) { //drop the volleyball
       vbY += gameSpeed;
@@ -262,7 +288,16 @@ function draw() {
 }
 
 function mouseClicked() {
-  if(firstBall && !startMenuOpen){
+  if(startMenuOpened && oneBtnMode){
+    startMenuClosed();
+  } else if (startMenuOpened && wasdMode){
+    playWasdMode();
+  } else if (startMenuOpened && tutorial){
+    playTutorial();
+  } else if(startMenuOpened && quit){
+    noLoop();
+  }
+  if(firstBall && !startMenuOpened){
       //tutorial();
       throwFirstBall();
     } else {
@@ -288,21 +323,7 @@ function mouseClicked() {
   }
 }
 
-
-    //if (currentZone == "outside" && randomZone == "outside") {
-      //setOutside();
-      //clickedZone = 1;
-      //ballSet = true;
-      //if (currentZone == "middle" && randomZone == "middle") {
-      //setMiddle();
-      //clickedZone = 2;
-      //ballSet = true;
-    //} else if (currentZone == "oppo" && randomZone == "opposite") {
-      //setOppo();
-      //clickedZone = 3;
-      //ballSet = true;
-    //}
-  if(!inHands){
+  if(!inHands && !firstBall){
     score -= 5;
     fill(255,255,255,playerTextOpacity);
     playerText = "Bad timing. -5 ";
@@ -369,6 +390,10 @@ function throwFirstBall(){
 }
 
 function startMenuOpen(){
+  oneBtnMode = false;
+  wasdMode = false;
+  tutorial = false;
+  quit = false;
   background(bgImage);
 
   fill('#006266');  
@@ -381,55 +406,79 @@ function startMenuOpen(){
   fill('#d1d8e0');
   text("Setter Skills 101",165,95,500,500);
 
+ let buttonColor1 =   'black';
+ let buttonColor2 =   'black';
+ let buttonColor3 =   'black';
+ let buttonColor4 =   'black';
 
+
+ //conditionals for buttons
+  if(mouseX >= 100 && mouseX <= 150 && mouseY >= 250 && mouseY <=300){
+    buttonColor1 = 'white';
+    oneBtnMode = true;
+  } else if (mouseX >= 100 && mouseX <= 150 && mouseY >= 350 && mouseY <=400){
+    buttonColor2 = 'white';
+    wasdMode = true;
+  } else if(mouseX >= 100 && mouseX <= 150 && mouseY >= 450 && mouseY <=500){
+    buttonColor3 = 'white';
+    tutorial = true;
+  } else if(mouseX >= 100 && mouseX <= 150 && mouseY >= 550 && mouseY <=600){
+    buttonColor4 = 'white';
+    quit = true;
+  }
   //one button mode button
-  fill('#2d98da');
+  fill(buttonColor1);
   stroke('darkGrey');
   strokeWeight(6);
   rect(100,250,50,50);
   fill('#d1d8e0');
-  noStroke();
+  stroke('black');
   textSize(40);
   text("one button mode", 160, 265, 500,500);
 
-
-
-
   //wasd mode button
-  fill('#2d98da');
+  fill(buttonColor2);
   stroke('darkGrey');
   strokeWeight(6);
   rect(100,350,50,50);
   fill('#d1d8e0');
-  noStroke();
+    stroke('black');
   textSize(40);
   text("wasd mode", 160, 365, 500,500);
 
   //quit button
-  fill('#2d98da');
+  fill(buttonColor4);
   stroke('darkGrey');
   strokeWeight(6);
   rect(100,550,50,50);
   fill('#d1d8e0');
-  noStroke();
+  stroke('black');
   textSize(40);
   text("quit the game", 160, 565, 500,500);
 
   //how do i play button
-  fill('#2d98da');
+  fill(buttonColor3);
   stroke('darkGrey');
   strokeWeight(6);
   rect(100,450,50,50);
   fill('#d1d8e0');
-  noStroke();
+    stroke('black');
   textSize(40);
   text("how do i play?", 160, 465, 500,500);
+
 }
 
 function startMenuClosed(){
-
+  startMenuOpened = false;
+  firstStart = false;
 }
 
 function gameMenuOpen(){
 
+}
+
+function playWasdMode(){
+  startMenuOpened = false;
+  firstStart = false;
+  wasdMode = true;
 }
