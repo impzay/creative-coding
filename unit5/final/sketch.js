@@ -30,8 +30,8 @@ var hoverMiddle = 100;
 var hoverOppo = 100;
 var totalTurns = 0;
 let setting;
-let startAnim;
-let endAnim;
+let startAnim = false;
+let setEndAnim = false;
 let vbSize = 250;
 let firstBall = true;
 let throwBall = false;
@@ -46,6 +46,8 @@ let quit = false;
 let startMenuOpened = true;
 let setterX = 400;
 let setterY = 400;
+let setAnimationPlaying = false;
+let consSets = 0;
 
 function setup() {
   createCanvas(800, 800);
@@ -84,13 +86,49 @@ function draw() {
     stroke('#ffb366');
     strokeWeight(5);
     rect(setterX - 50,setterY+armY,20,140);
+    noStroke();
     //setter
+    //legs
+    fill('#ffcc99');
+    stroke('#ffb366');
+    strokeWeight(3);
+    //L
+    rect(setterX-25,setterY+120,15,100);
+    //r
+    rect(setterX + 5,setterY+120,15,100);
+    //body
+    fill('navy')
+    stroke('black');
+    strokeWeight(2);
+    rect(setterX-25,setterY+50,50,100)
+    
     //head
     fill('#ffcc99');
     circle(setterX,setterY,100,100);
-    
+    //eyes
+    fill('white');
+    noStroke();
+    circle(setterX - 15,setterY - 20,35,35);
+    //pupil
+    fill('black');
 
+    //outside pupil
+    if(outside){
+        circle(setterX - 25,setterY - 30,15,15);
+      } else if (middle){
+    //middle pupil
+    circle(setterX - 15,setterY - 30,15,15);
+    } else if (oppo){
+    //oppo pupil
+    circle(setterX - 7,setterY - 30,15,15);
+    } else {
+      circle(setterX -15,setterY -20,15,15);
+    }
+    if(oneBtnMode){
 
+    }
+
+    //wasdmode
     if(wasdMode){
       if(!keyIsDown){
         setterX = setterX
@@ -110,6 +148,8 @@ function draw() {
           setterY +=1;
         }
     }
+
+    //calculating the first ball throw
     if(throwBall){
       vbSize -= 1
       vbX += 1;
@@ -121,6 +161,7 @@ function draw() {
         vbSize += 1;
       }
     } 
+
     if(falling){
       ballMoving = false;
       vbY = vbY +  gameSpeed; // ball falls downward
@@ -130,14 +171,17 @@ function draw() {
       }
     }
 
+
+    //calculates ball movement when setting and falling after set
     if (ballMoving) {
       vbX += (targetX - vbX) * setSpeed;
       vbY += (targetY - vbY) * setSpeed;
 
-      // Stop moving when the ball reaches the target
+      //stops moving when the ball reaches the target
       if (dist(vbX, vbY, targetX, targetY) < 1) {
         ballMoving = false; 
         falling = true;
+        ballSet = false;
       }
     }
 
@@ -148,9 +192,10 @@ function draw() {
 
     // Draw blue bands
     fill('blue');
-    ellipse(vbX, vbY - 60, vbSize/1.2, vbSize/4); // Top blue band
-    ellipse(vbX, vbY + 60, vbSize/1.2, vbSize/4); // Bottom blue band
+    ellipse(vbX, vbY, vbSize/1.1, vbSize/4); // blue band
 
+
+    //setting zones hover
     if(mouseX >= 0 && mouseX <= 300 && mouseY < 400){
       outside = true;
       currentZone = "outside";
@@ -170,6 +215,10 @@ function draw() {
       oppo = false;
     }
 
+  //setting streak stuff
+    if(consSets = 3){
+
+    }
     
     //text("random num debug " + randomNum, 100,100,500,500);
     if(randomNum == 1){
@@ -188,7 +237,7 @@ function draw() {
     fill(255,255,255,playerTextOpacity);
     text(playerText,450,playerTextY,250,250);
     fill(255,255,255);
-    text("Score: "+score+"\nTurns elapsed: "+totalTurns,600,600,200,200);
+    text("Score: "+score+"\nTurns elapsed: "+totalTurns + "\n Setting Streak: "+ consSets ,600,600,200,200);
     //text("selected zone = "+ currentZone + "\n clickedZone = " + clickedZone + "\n ball set : "+  ballSet + "\n in hands: "+ inHands + "\nball speed : " + gameSpeed + "\n set speed: "+setSpeed+ "\n vby: "+vbY+ "\n falling: "+falling, 400,550, 300, 250);
     textSize(50);
     if(firstBall){
@@ -208,15 +257,26 @@ function draw() {
       vbY += gameSpeed;
       ballPeak = true;
     }
-    if (vbY >= 250 && vbX >= 390 && vbX <= 410) { //condition statement for hitbox of setters hands 
+
+    //calculates hitbox of setters hands
+    if(firstBall && vbY >= 250 && vbX >= 350 && vbX <= 430){
+      inhands = true;
+    }
+      else if (vbY >= 250 && vbX >= 390 && vbX <= 410) { //condition statement for hitbox of setters hands 
       inHands = true;
     }
 
+
+    //incorrectly setting ball 
     if(ballSet && clickedZone !== randomNum){
-      gameOver();
-    }
+      consSets = 0;
+      playerText  = "wrong zone... - 15."
+      score =- 15;
+      resetBall();
+      }
 
 
+    //calls function when setting different zones
     if(clickedZone == randomNum){
       if(clickedZone == 1){
         setOutside();
@@ -230,7 +290,7 @@ function draw() {
       ballSet = true;
       setCountdown = 5;
     } 
-
+    //set countdown and action control 
     if(inHands){ //if the ball is in setters hands, start the set countdown 
       throwBall = false
       noStroke();
@@ -242,25 +302,26 @@ function draw() {
         playerText = "Too slow... - 10"
         setCountdown = 5;
         score -= 10;
+        consSets = 0;
       }
     }
 
-    if(setting){ //if setting is true, do the set animation
-      if(startAnim){
-        armY -= 2;
+    //setting animation handler
+      if(setAnimationPlaying){
+          setterY -= 2;
+          if(setterY <= 350 ){
+            setAnimationPlaying = false;
+            setEndAnim = true;
+          }
+        }
+      if(setEndAnim){
+        setterY += 3;
       }
-      if(armY < 265 && startAnim){
-        startAnim = false;
-        endAnim = true;
-      } 
-      if(endAnim && armY < 300){
-        stroke('black');
-        text("skibidi",50,50,50,50);
-        armY += 3;
-        } else {
-          armY == 300;
+      if(setEndAnim  & setterY >= 401){
+          setterY == setterY;
+          setEndAnim = false;
       }
-    }
+        
 
     if(mouseClicked){
       
@@ -293,7 +354,7 @@ function mouseClicked() {
   } else if (startMenuOpened && wasdMode){
     playWasdMode();
   } else if (startMenuOpened && tutorial){
-    playTutorial();
+    loadtutorial();
   } else if(startMenuOpened && quit){
     noLoop();
   }
@@ -302,12 +363,15 @@ function mouseClicked() {
       throwFirstBall();
     } else {
   if (inHands) {
+    setting = true;
     playerText = "Good timing! +5 ";
+    consSets  = consSets + 1;
     score += 5;
     setFalling = false;
+    
 
     //Play setting animation
-    setAnim();
+    setAnimationPlaying = true;
     if(currentZone == "outside"){
       clickedZone = 1;
       ballSet = true;
@@ -325,6 +389,7 @@ function mouseClicked() {
 
   if(!inHands && !firstBall){
     score -= 5;
+    consSets  = 0;
     fill(255,255,255,playerTextOpacity);
     playerText = "Bad timing. -5 ";
   }
@@ -368,20 +433,7 @@ function resetBall() {
   playerTextY = 350;
   totalTurns += 1;
   setting = false;
-  armY = 300;
-  endAnim = false;
-}
-function setAnim(){
-  setting = true;
-  startAnim = true;
-}
 
-function gameOver(){
-  fill('grey');
-  rect(50,50,600,600);
-  restartButton=createButton("Restart");
-  restartButton.position(10, height + 20);
-  restartButton.mousePressed(window.location.reload())
 }
 
 function throwFirstBall(){
@@ -477,6 +529,20 @@ function gameMenuOpen(){
 
 }
 
+function loadtutorial(){
+
+  background('black');
+  rect(50,50,50,50);
+  fill('#006266');  
+  noStroke();
+  rect(150,50,500,125);
+  textSize(65);
+  noStroke();
+  fill("black");
+  text("Setter Skills 101",162,90,500,500);
+  fill('#d1d8e0');
+  text("Setter Skills 101",165,95,500,500);
+}
 function playWasdMode(){
   startMenuOpened = false;
   firstStart = false;
