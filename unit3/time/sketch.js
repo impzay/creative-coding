@@ -1,13 +1,17 @@
 function setup() {
   createCanvas(800, 800);
+  //unused background color lol
   var backgroundColor = (220,0,0);
 }
 
   
 
 function draw() {
+  //background
   background('lightslategray');
 
+
+  //using map functions to seperate the hours into different x and y values so when the time is different the shapes appearing will be different
   let s = map(hour(), 0,16, 875, -100);
   let m = map(hour(), 16,23, 875, -100);
   let g = map(second(), 0,60,950,-150);
