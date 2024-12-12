@@ -52,6 +52,8 @@ let consSets = 0;
 let showTutorial = false;
 let closeT = false;
 let settingTextY = 250;
+let netX = 15;
+let netY = 150;
 
 
 function setup() {
@@ -102,12 +104,22 @@ function draw() {
     noStroke();
     fill(193, 134, 45);
     rect(0,400,800,500);
-    
-    for(let i = 1; i > 50; i++){
+    //for loop for repeating floorboards
+    for(let i = 1; i < 50; i++){
       fill(169, 113, 29);
-       rect(25,400,10,500);
+       rect(netX * i ,400,10,500);
     }
-   
+    //net
+    fill('white');
+    rect(0,150,800,25);
+    rect(0,350,800,25);
+    //for loops for netting
+    for(let i = 0; i < 100; i++){
+
+      fill('white');
+      rect(netX * i,150,5,200);
+      
+    }
     //setting zones
     stroke(0,0,0,25);
     //outside zone
