@@ -1,23 +1,34 @@
-function setup() {
-  createCanvas(500, 500);
-}
-  let debug = true;
+  let debug = false;
   var circleX = 50;
   var circleY = 50;
   var xSpeed;
   var ySpeed;
-  var speedfactor = 1;
+  var speedfactor = 2.1;
   var img;
+  var randomX, randomY;
+  var score = 0;
+function setup() {
+  createCanvas(500, 500);
+}
 
-
+function preload(){
+    img = loadImage('https://impzay.github.io/creative-coding/unit3/3.2.follower/hinata.jpg');
+}
 function draw() {
+  randomX = random(50,450);
+  randomY = random(50,450);
   background(220);
   
-  img = preload('hinata.jpg');
   image(img,circleX,circleY,50,50);
 
   fill('black');
   circle(mouseX,mouseY,15,15);
+  if(circleX >= mouseX - 15 && circleX <= mouseX + 15 && circleY >= mouseY - 15 && circleY <= mouseY + 15){
+    score -= 1;
+    circleX = randomX;
+    circleY = randomY;
+  }
+
   if (mouseX > circleX){
     xSpeed = speedfactor;
   } else {
@@ -25,19 +36,15 @@ function draw() {
   }
 
   if (mouseY > circleY){
-    ySpeed = speedfactor;
+    ySpeed =speedfactor;
   } else {
-    ySpeed = -speedfactor;
+    ySpeed =-speedfactor;
   }
 
-  circleX = circleX + xSpeed;
-  circleY = circleY + ySpeed;
+  circleX += xSpeed;
+  circleY += ySpeed;
 
-  if ((circleX + 25 == mouseX) && (circleY + 25 == mouseY)){
-    circleX = 50;
-    circleY = 50;
-  }
-
+  text("score!: "+score,30,30);
   if(debug){
     text("width: " + width, 30, 30);
     text("height: " + height, 30, 45);
