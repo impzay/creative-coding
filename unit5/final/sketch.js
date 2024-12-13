@@ -20,9 +20,10 @@ var randomNum;
 var clickedZone = null;
 var ballSet = false;
 var score = 0;
-var playerText = ""
+var playerText = "";
 var playerTextY = 350;
 var playerTextOpacity = 255;
+var settingTextOpacity = 255;
 var setCountdown = 15;
 var angle = 0;
 var hoverOutside = 100;
@@ -48,9 +49,15 @@ let setterX = 400;
 let setterY = 400;
 let setAnimationPlaying = false;
 let consSets = 0;
+let showTutorial = false;
+let closeT = false;
+let settingTextY = 250;
+let netX = 15;
+let netY = 150;
+
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(800,800);
   randomNum = int(random(1,4));
 }
 
@@ -61,8 +68,58 @@ function preload(){
 function draw() {
   if(firstStart){
     startMenuOpen();
+  } else if(showTutorial){
+     background(bgImage);
+
+  fill('#006266');  
+  noStroke();
+  rect(150,50,500,125);
+  textSize(65);
+  noStroke();
+  fill("black");
+  text("Setter Skills 101",162,90,500,500);
+  fill('#d1d8e0');
+  text("Setter Skills 101",165,95,500,500);
+  
+  textSize(25);
+  stroke('black');
+  fill('white');
+  text("The ball will drop from the top of the screen, you have to select which zone you will set the ball to.",150,195,500,500);
+  text("once the ball is in the setters hands, you will have a quick countdown so set the ball and dont carry it!",150,295,500,500);
+  text("the game will increase in speed as you keep playing, try for a high score!",150,395,500,500);
+  text("Click anywhere to start playing! Have fun!",150,495,500,500);
+
+
+
+  //button 
+  if(mouseX >= 0  && mouseY > 0){
+    closeT = true
+  }
+
+
   } else {
     background('grey');
+
+    //floor
+    noStroke();
+    fill(193, 134, 45);
+    rect(0,400,800,500);
+    //for loop for repeating floorboards
+    for(let i = 1; i < 50; i++){
+      fill(169, 113, 29);
+       rect(netX * i ,400,10,500);
+    }
+    //net
+    fill('white');
+    rect(0,150,800,25);
+    rect(0,350,800,25);
+    //for loops for netting
+    for(let i = 0; i < 100; i++){
+
+      fill('white');
+      rect(netX * i,150,5,200);
+      
+    }
     //setting zones
     stroke(0,0,0,25);
     //outside zone
@@ -174,10 +231,12 @@ function draw() {
 
     //calculates ball movement when setting and falling after set
     if (ballMoving) {
+       settingTextOpacity = 255;
       vbX += (targetX - vbX) * setSpeed;
       vbY += (targetY - vbY) * setSpeed;
 
       //stops moving when the ball reaches the target
+      //calculated distance the volleyball is from the target and if its less than one, its at the target
       if (dist(vbX, vbY, targetX, targetY) < 1) {
         ballMoving = false; 
         falling = true;
@@ -188,11 +247,10 @@ function draw() {
     //ball
     noStroke();
     fill('gold');
-    circle(vbX, vbY, vbSize); // Base yellow circle
+    circle(vbX, vbY, vbSize); //base yellow circle
 
-    // Draw blue bands
     fill('blue');
-    ellipse(vbX, vbY, vbSize/1.1, vbSize/4); // blue band
+    ellipse(vbX, vbY, vbSize/1.1, vbSize/4); //blue band
 
 
     //setting zones hover
@@ -216,9 +274,19 @@ function draw() {
     }
 
   //setting streak stuff
-    if(consSets = 3){
+    if(consSets >= 20){
+      fill(242, 225, 90,settingTextOpacity);
+      text("D1 SETTER!!!!",150,settingTextY,500,500);
+    } else if(consSets >= 10){
+      fill(242, 225, 90,settingTextOpacity);
+      text("clean sets!!",150,settingTextY,500,500);
 
-    }
+    } else if(consSets >= 5){
+      noStroke();
+      fill(242, 225, 90,settingTextOpacity);
+      text("butter!",150,settingTextY,500,500);
+    } 
+    
     
     //text("random num debug " + randomNum, 100,100,500,500);
     if(randomNum == 1){
@@ -243,7 +311,10 @@ function draw() {
     if(firstBall){
       text("click to throw ball!", 225,500,450,350);
     } else{
-    text("set to "+ randomZone, 225,500,450,350);
+    text("set to ", 105,650,450,350);
+    stroke('green');
+    strokeWeight(25);
+    text( randomZone, 255,650,450,350);
   }
     textSize(25);
 
@@ -287,16 +358,19 @@ function draw() {
       if(clickedZone == 3){
         setOppo();
       }
+      settingTextOpacity -= 5;
+      settingTextY -= .2;
       ballSet = true;
       setCountdown = 5;
     } 
     //set countdown and action control 
     if(inHands){ //if the ball is in setters hands, start the set countdown 
       throwBall = false
+      firstThrow = false;
       noStroke();
       fill('white');
       text(int(setCountdown),350,450,100,100);
-      setCountdown -= 0.05;
+      setCountdown -= 0.02;
       if(setCountdown <= 0){//reset ball and minus score if you carried the ball.
         resetBall();
         playerText = "Too slow... - 10"
@@ -350,13 +424,17 @@ function draw() {
 
 function mouseClicked() {
   if(startMenuOpened && oneBtnMode){
-    startMenuClosed();
+    gameMenuOpen();
   } else if (startMenuOpened && wasdMode){
     playWasdMode();
   } else if (startMenuOpened && tutorial){
+    console.log("tutorial loading");
     loadtutorial();
-  } else if(startMenuOpened && quit){
+  } else if (startMenuOpened && quit){
     noLoop();
+  } else if(closeT && showTutorial){
+    closeTutorial();
+    gameMenuOpen();
   }
   if(firstBall && !startMenuOpened){
       //tutorial();
@@ -387,7 +465,7 @@ function mouseClicked() {
   }
 }
 
-  if(!inHands && !firstBall){
+  if(!inHands && !firstThrow){
     score -= 5;
     consSets  = 0;
     fill(255,255,255,playerTextOpacity);
@@ -430,6 +508,8 @@ function resetBall() {
   randomNum = int(random(1,4));
   playerText = "";
   playerTextOpacity = 255;
+  settingTextY = 250;
+
   playerTextY = 350;
   totalTurns += 1;
   setting = false;
@@ -523,25 +603,22 @@ function startMenuOpen(){
 function startMenuClosed(){
   startMenuOpened = false;
   firstStart = false;
+  firstBall = false;
 }
 
 function gameMenuOpen(){
-
+  startMenuOpened = false;
+  firstBall = true;
+  firstStart = false;
 }
 
 function loadtutorial(){
-
-  background('black');
-  rect(50,50,50,50);
-  fill('#006266');  
-  noStroke();
-  rect(150,50,500,125);
-  textSize(65);
-  noStroke();
-  fill("black");
-  text("Setter Skills 101",162,90,500,500);
-  fill('#d1d8e0');
-  text("Setter Skills 101",165,95,500,500);
+  startMenuClosed();
+  showTutorial = true;
+}
+function closeTutorial(){
+  startMenuOpened = true;
+  showTutorial = false;
 }
 function playWasdMode(){
   startMenuOpened = false;
