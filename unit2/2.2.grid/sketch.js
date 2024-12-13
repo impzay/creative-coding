@@ -5,18 +5,19 @@
 
 function setup() {
   // create a canvas
-  createCanvas(1200, 1200);
+  createCanvas(900, 900);
   frameRate(random(1,10));
-  
+
 }
 
 
 function draw() {
+  background('black');
+
   //variable for a random size of shape
   var shapeSize = random(50,70);
 
 //background color
-  background('gray');
 //translates the circles to the right and down 100 pixels each
   translate(100,100);
 

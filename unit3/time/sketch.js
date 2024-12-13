@@ -18,6 +18,8 @@ function draw() {
   let ry = map(second(), 55,60,950,-150);
   let rx = map(second(), 55,60,0,950);
   let px = map(minute(), 0, 60,800,0);
+
+
   //sun
   stroke(255, 187, 51);
   fill(255, 187, 51);

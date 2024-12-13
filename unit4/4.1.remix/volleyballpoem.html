@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset=utf-8>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--
+	Random Sentences reimplementation
+	copyright (c) 2016, 2024 Nick Montfort <nickm@nickm.com>
+	based on a 1961 program by Victor H. Yngve
+
+	Copying and distribution of this file, with or without modification,
+	are permitted in any medium without royalty provided the copyright
+	notice and this notice are preserved. This file is offered as-is,
+	without any warranty.
+
+
+	imported the Random Sentences work by VicTor H. Yngve
+	https://nickm.com/memslam/random_sentences.html
+	link to his work
+	-->
+	<style>
+		body {
+			margin: 0;
+			font-family: monospace;
+			font-size: clamp(1rem, 1vw, 1.5rem);
+			overflow:hidden;
+		}
+		header > h1 {
+			padding: .3rem .8rem .2rem .8rem;
+			font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', 
+				serif;
+			font-size: .85rem;
+			font-weight: normal;
+			white-space: nowrap;
+		}
+		a {
+			text-decoration: none;
+			color: #b00;
+		}
+		#main {
+			padding: 8rem 6vw 3vh 6vw;
+		}
+	</style>
+	<script>
+		var t = 0, caps = false, pause = false, rule = {};
+
+		const grammar = [ // The Python version is cleaner
+		// This isn’t in true Backus-Naur form
+		'<sentence> ::= <short-sentence> | <long-sentence>',
+		'<short-sentence> ::= <subject>/<verb-1>/" it" | <subject>/<verb-1>/' + 
+			'<some-objects> | <subject>/<verb-2>/<some-adjectives>',
+		'<long-sentence> ::= " when"/<short-sentence>/","/<short-sentence>',
+		'<subject> ::= <proper-noun> | <subject-pronoun> | <singular> | ' + 
+			'<singular>/<preposition>/<singular>',
+		'<proper-noun> ::= " Yoshi" | " Isaiah"',
+		'<subject-pronoun> ::= " he" | " it"',
+		'<singular> ::= <consonant-noun> | <an-the-adjs>/" player"',
+		'<consonant-noun> ::= <a-the-adjs>/<countable> | ' + 
+			'<-the-adjs>/<uncountable>',
+		'<countable> ::= " volleyball" | " net" | " whistle" | " antenna" | ' + 
+			'" shoes" | " set" | " set" | " spike" | " jump"',
+		'<uncountable> ::= " people" | " sand"',
+		'<plural> ::= <four-the-adjs>/<plural-noun>',
+		'<adjective> ::= " huge" | " quick" | " fast" | " crazy" | ' + 
+			'" clean" | " butter" | " big"',
+		'<some-adjectives> ::= <adjective> | ' + 
+			'<adjective>/<maybe-adjectives>/" and"/<adjective>',
+		'<a-an-adjective> ::= " a little" | " a clean" | " a butter" | ' + 
+			'" an amazing" | " a sugoi" | " a giant" | " a tiny"',
+		'<singular-adjs> ::= <a-an-adjective>/<maybe-adjectives> | " the"/' + 
+			'<adjective>/<maybe-adjectives> | <possessive>/<adjective>/' + 
+			'<maybe-adjectives>',
+		'<maybe-adjectives> ::= ","/<adjective>/<maybe-adjectives> | ""',
+		'<a-the-adjs> ::= " a" | " the" | <possessive> | <singular-adjs>',
+		'<an-the-adjs> ::= " an" | " the" | <possessive> | <singular-adjs>',
+		'<-the-adjs> ::= " the" | <possessive> | <singular-adjs> | ""',
+		'<verb-1> ::= " has" | " is" | " is proud of" | " makes"',
+		'<verb-2> ::= " is" | " keeps"/<object> | " keeps it"',
+		'<possessive> ::= " his" | " its"',
+		'<four-the-adjs> ::= " the" | <possessive> | " four" | ' + 
+			'" the"/<some-adjectives> | <possessive>/<some-adjectives> | ' + 
+			'" four"/<some-adjectives>',
+		'<plural-noun> ::= " volleyballs" | " sets" | " his" | " jumps" | ' +
+			'" spikes" | " digs" | " movements" | ' + 
+			'" speed" | " jumps" | " sets"',
+		'<preposition> ::= " under" | " in"',
+		'<object> ::= <proper-noun> | <singular> | <plural> | <singular>/' + 
+			'<preposition>/<singular>',
+		'<maybe-objects> ::= ","/<object>/<maybe-objects> | ""',
+		'<some-objects> ::= <object> | <object>/<maybe-objects>/" ' + 
+			'and"/<object> | <object>/<maybe-objects>/" and"/<object>'];
+
+		function fullscreenListeners(f)
+		{
+			f("mozfullscreenchange", fullscreenEvt);
+			f("MSFullscreenChange", fullscreenEvt);
+			f("fullscreenchange", fullscreenEvt);
+			f("webkitfullscreenchange", fullscreenEvt);
+		}
+
+		function fullscreenEvt(incomingReq)
+		{
+			fullscreenListeners(document.removeEventListener);
+			if(incomingReq === true || document.mozFullScreen || 
+			document.fullscreenElement || document.webkitIsFullScreen || 
+			document.msFullscreenElement) {
+				var fsElt;
+				if(window.c instanceof HTMLCanvasElement) fsElt = window.c;
+				else fsElt = document.documentElement;
+				if (fsElt.requestFullscreen) fsElt.requestFullscreen();
+				else if (fsElt.msRequestFullscreen) fsElt.msRequestFullscreen();
+				else if (fsElt.mozRequestFullScreen)
+					fsElt.mozRequestFullScreen();
+				else if (fsElt.webkitRequestFullScreen) 
+					fsElt.webkitRequestFullScreen();
+				nav.style.display = "none";
+				main.style.paddingTop = "0";
+			}
+		}
+
+		function pick(array) {
+			var i = Math.floor(Math.random() * (array.length));
+			return array[i];
+		}
+
+		function expand(token) {
+			var result = [];
+			if (token[0] === '"') result = [token.slice(1,-1)];
+			else {
+				var option = pick(rule[token]);
+				option = option.split('/');
+				for (var i=0; i<option.length; i++) result += expand(option[i]);
+			}
+			return result;
+		}
+
+		function nextText() {
+			var last, text;
+			if (pause) setTimeout(nextText, 300);
+			else {
+				if (60 > t) t += 1;
+				else {main.removeChild(main.firstChild);}
+				last = document.createElement('div');
+				text = expand('<sentence>') + '.';
+				text = text.charAt(1).toUpperCase() + text.slice(2) + '<br>';
+				last.innerHTML = caps ? text.toUpperCase() : text;
+				main.appendChild(last);
+				main.appendChild(document.createElement('br'));
+				main.lastChild.scrollIntoView({block:"end", behavior:"smooth"});
+				setTimeout(nextText, 6000);
+			}
+		}
+
+		function initialize() {
+			for (var i=0; i<grammar.length; i++) {
+				var sides = grammar[i].split(' ::= ');
+				rule[sides[0]] = sides[1].split(' | ');
+			}
+			nextText();
+		}
+	</script>
+	<title>Yngve’s Random Sentences (Reimplementation)</title>
+</head>
+<body onload=initialize()>
+	<header id=nav>
+		
+	</header>
+	<div id=main></div>
+</body>
+</html>
