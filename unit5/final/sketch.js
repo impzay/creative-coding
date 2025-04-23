@@ -54,7 +54,8 @@ let closeT = false;
 let settingTextY = 250;
 let netX = 15;
 let netY = 150;
-
+var gameOver = false;
+let zoneTextY = 650;
 
 function setup() {
   createCanvas(800,800);
@@ -66,6 +67,10 @@ function preload(){
 }
 
 function draw() {
+  if (gameOver) {
+  showGameOverScreen();
+  return;
+}
   if(firstStart){
     startMenuOpen();
   } else if(showTutorial){
@@ -84,10 +89,10 @@ function draw() {
   textSize(25);
   stroke('black');
   fill('white');
-  text("The ball will drop from the top of the screen, you have to select which zone you will set the ball to.",150,195,500,500);
-  text("once the ball is in the setters hands, you will have a quick countdown so set the ball and dont carry it!",150,295,500,500);
-  text("the game will increase in speed as you keep playing, try for a high score!",150,395,500,500);
-  text("Click anywhere to start playing! Have fun!",150,495,500,500);
+  text("The ball will drop from the top of the screen, you have to select which zone you will set the ball to. Left is Outside, Middle is middle, and right is opposite.",150,195,500,500);
+  text("Once the ball is in the setters hands, you will have a quick countdown so set the ball and dont carry it!",150,355,500,500);
+  text("the game will increase in speed as you keep playing, try for a high score! If you drop or carry the ball after 5 turns, you lose!",150,495,500,500);
+  text("Click anywhere to start playing! Have fun!",150,595,500,500);
 
 
 
@@ -274,17 +279,19 @@ function draw() {
     }
 
   //setting streak stuff
+    fill(0,0,0);
     if(consSets >= 20){
-      fill(242, 225, 90,settingTextOpacity);
-      text("D1 SETTER!!!!",150,settingTextY,500,500);
+      fill(0,0,0,settingTextOpacity);
+      text("D1 SETTER!!!!",150,settingTextY+150,500,500);
     } else if(consSets >= 10){
-      fill(242, 225, 90,settingTextOpacity);
-      text("clean sets!!",150,settingTextY,500,500);
+      fill(0,0,0,settingTextOpacity);
+      text("clean sets!!",150,settingTextY+150,500,500);
 
     } else if(consSets >= 5){
       noStroke();
-      fill(242, 225, 90,settingTextOpacity);
-      text("butter!",150,settingTextY,500,500);
+      fill(0,0,0,settingTextOpacity);
+      text("butter!",150,settingTextY+150,500,500);
+      noStroke();
     } 
     
     
@@ -301,8 +308,9 @@ function draw() {
 
 
     fill('white') //text near player
-    textSize(25);
-    fill(255,255,255,playerTextOpacity);
+    strokeWeight(5);
+    textSize(35);
+    fill(0,0,0,playerTextOpacity);
     text(playerText,450,playerTextY,250,250);
     fill(255,255,255);
     text("Score: "+score+"\nTurns elapsed: "+totalTurns + "\n Setting Streak: "+ consSets ,600,600,200,200);
@@ -314,7 +322,7 @@ function draw() {
     text("set to ", 105,650,450,350);
     stroke('green');
     strokeWeight(25);
-    text( randomZone, 255,650,450,350);
+    text( randomZone, 255,zoneTextY,450,350);
   }
     textSize(25);
 
@@ -340,7 +348,8 @@ function draw() {
 
     //incorrectly setting ball 
     if(ballSet && clickedZone !== randomNum){
-      consSets = 0;
+      fill(0,0,0);
+      consSets = 0;fill(0,0,0);
       playerText  = "wrong zone... - 15."
       score =- 15;
       resetBall();
@@ -368,10 +377,13 @@ function draw() {
       throwBall = false
       firstThrow = false;
       noStroke();
-      fill('white');
+      fill(0,0,0);
       text(int(setCountdown),350,450,100,100);
       setCountdown -= 0.02;
       if(setCountdown <= 0){//reset ball and minus score if you carried the ball.
+        if(totalTurns >= 5){
+            gameOver = true;
+        }
         resetBall();
         playerText = "Too slow... - 10"
         setCountdown = 5;
@@ -436,15 +448,17 @@ function mouseClicked() {
     closeTutorial();
     gameMenuOpen();
   }
+
   if(firstBall && !startMenuOpened){
       //tutorial();
       throwFirstBall();
     } else {
-  if (inHands) {
+  if (inHands && !gameOver) {
     setting = true;
+    fill('black');
     playerText = "Good timing! +5 ";
     consSets  = consSets + 1;
-    score += 5;
+    score += 5 * consSets;
     setFalling = false;
     
 
@@ -466,11 +480,16 @@ function mouseClicked() {
 }
 
   if(!inHands && !firstThrow){
+      if(totalTurns >= 5){
+      gameOver = true;
+        }
     score -= 5;
     consSets  = 0;
-    fill(255,255,255,playerTextOpacity);
+    fill(0,0,0,playerTextOpacity);
     playerText = "Bad timing. -5 ";
   }
+
+  
 }
 
 function setOutside(){
@@ -624,4 +643,19 @@ function playWasdMode(){
   startMenuOpened = false;
   firstStart = false;
   wasdMode = true;
+}
+function showGameOverScreen() {
+  background(bgImage); // dark overlay
+  fill('white');
+  textAlign(CENTER, CENTER);
+  textSize(60);
+  text("Game Over...", width/2, height/2 - 60);
+
+  textSize(30);
+  text("Your score was: " + score, width/2, height/2);
+  text("Refresh to Play Again!", width/2, height/2 + 60);
+}
+function restartGame() {
+  startMenuOpen();
+  gameOver = false;
 }
